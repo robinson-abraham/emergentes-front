@@ -15,10 +15,16 @@ export default function ItemImovel({ imovel, imoveis, setImoveis }: ItemProps) {
   const { admin } = useAdminStore()
 
   async function excluirImovel() {
+    // VERIFICAÇÃO ADICIONADA AQUI
+    if (!admin) {
+      alert("Erro: Admin não está logado.")
+      return;
+    }
+    
     if (confirm(`Confirma a exclusão do imóvel "${imovel.titulo}"?`)) {
       const response = await fetch(`${apiUrl}/imoveis/${imovel.id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${admin.token}` },
+        headers: { Authorization: `Bearer ${admin.token}` }, // Agora é seguro
       })
       if (response.status === 200) {
         const imoveisAtualizados = imoveis.map(i => i.id === imovel.id ? { ...i, ativo: false } : i);
@@ -28,9 +34,15 @@ export default function ItemImovel({ imovel, imoveis, setImoveis }: ItemProps) {
   }
 
   async function alterarDestaque() {
+    // VERIFICAÇÃO ADICIONADA AQUI
+    if (!admin) {
+      alert("Erro: Admin não está logado.")
+      return;
+    }
+
     const response = await fetch(`${apiUrl}/imoveis/destacar/${imovel.id}`, {
       method: "PATCH",
-      headers: { Authorization: `Bearer ${admin.token}` },
+      headers: { Authorization: `Bearer ${admin.token}` }, // Agora é seguro
     })
     if (response.status === 200) {
       const imoveisAtualizados = imoveis.map(i => i.id === imovel.id ? { ...i, destaque: !i.destaque } : i);
@@ -38,6 +50,7 @@ export default function ItemImovel({ imovel, imoveis, setImoveis }: ItemProps) {
     }
   }
 
+  // ... o resto do seu componente continua igual
   return (
     <tr className={`border-b ${!imovel.ativo && 'bg-red-100'}`}>
       <td className="px-6 py-4">
